@@ -1019,7 +1019,7 @@ GameObject:
   - component: {fileID: 903592905}
   - component: {fileID: 903592904}
   - component: {fileID: 903592903}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Capsule (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1307,7 +1307,7 @@ GameObject:
   - component: {fileID: 1044813052}
   - component: {fileID: 1044813051}
   - component: {fileID: 1044813050}
-  m_Layer: 7
+  m_Layer: 6
   m_Name: Capsule (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
