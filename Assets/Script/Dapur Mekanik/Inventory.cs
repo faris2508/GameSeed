@@ -1,16 +1,27 @@
 using UnityEngine;
-using TMPro; // Jika menggunakan TextMeshPro
+using UnityEngine.UI;
 using System.Collections.Generic;
+using TMPro;
 
 public class Inventory : MonoBehaviour
 {
     private Stack<string> foodInventory = new Stack<string>();
+    private Stack<Sprite> foodSprites = new Stack<Sprite>(); // Untuk UI inventory
     private int maxInventorySize = 5;
-    public TextMeshProUGUI inventoryText; // Referensi ke UI Text di Inspector
+    public Image inventoryImage; // UI Image untuk menampilkan sprite makanan
+    public TextMeshProUGUI inventoryText;
 
     void Start()
     {
-        UpdateInventoryUI(); // Perbarui UI saat game dimulai
+        // Sembunyikan UI Image saat start
+        if (inventoryImage != null)
+        {
+            inventoryImage.gameObject.SetActive(false);
+        }
+        if (inventoryText != null)
+        {
+            inventoryText.gameObject.SetActive(false);
+        }
     }
 
     void Update()
@@ -21,11 +32,12 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    public void AddItem(string foodName)
+    public void AddItem(string foodName, Sprite foodSprite)
     {
         if (foodInventory.Count < maxInventorySize)
         {
             foodInventory.Push(foodName);
+            foodSprites.Push(foodSprite);
             Debug.Log($"Item {foodName} ditambahkan ke inventory.");
             UpdateInventoryUI();
         }
@@ -40,6 +52,7 @@ public class Inventory : MonoBehaviour
         if (foodInventory.Count > 0)
         {
             string food = foodInventory.Pop();
+            foodSprites.Pop();
             Debug.Log($"Memberikan {food} ke customer.");
             UpdateInventoryUI();
             return food;
@@ -53,14 +66,36 @@ public class Inventory : MonoBehaviour
 
     private void UpdateInventoryUI()
     {
+        if (inventoryImage != null)
+        {
+            if (foodSprites.Count > 0)
+            {
+                inventoryImage.sprite = foodSprites.Peek(); // Ambil sprite teratas
+                inventoryImage.gameObject.SetActive(true);
+            }
+            else
+            {
+                inventoryImage.gameObject.SetActive(false); // Sembunyikan jika inventory kosong
+            }
+        }
+
+        // Update UI Text untuk daftar makanan
         if (inventoryText != null)
         {
-            string inventoryList = "Inventory:\n";
-            foreach (string food in foodInventory)
+            if (foodInventory.Count > 0)
             {
-                inventoryList += food + "\n";
+                string inventoryList = "Inventory:\n";
+                foreach (string food in foodInventory)
+                {
+                    inventoryList += food + "\n";
+                }
+                inventoryText.text = inventoryList;
+                inventoryText.gameObject.SetActive(true);
             }
-            inventoryText.text = inventoryList;
+            else
+            {
+                inventoryText.gameObject.SetActive(false); // Sembunyikan jika inventory kosong
+            }
         }
     }
 }

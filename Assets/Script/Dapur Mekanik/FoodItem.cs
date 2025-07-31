@@ -4,6 +4,7 @@ using TMPro;
 public class FoodItem : MonoBehaviour
 {
     public string foodName; // Nama makanan, misalnya "Rendang", "Sate", dll.
+    public Sprite foodSprite; // Sprite untuk UI inventory
     public TextMeshProUGUI promptText; // Referensi ke UI Text untuk prompt
 
     private bool isPlayerInRange = false;
@@ -37,7 +38,7 @@ public class FoodItem : MonoBehaviour
             Inventory inventory = other.GetComponent<Inventory>();
             if (inventory != null)
             {
-                inventory.AddItem(foodName);
+                inventory.AddItem(foodName, foodSprite);
                 // Tidak menyembunyikan item atau prompt, biarkan tetap aktif
             }
         }
