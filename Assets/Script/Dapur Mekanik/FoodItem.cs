@@ -5,6 +5,8 @@ public class FoodItem : MonoBehaviour
 {
     public string foodName; // Nama makanan, misalnya "Rendang", "Sate", dll.
     public Sprite foodSprite; // Sprite untuk UI inventory
+    public GameObject foodPrefab;
+    public Vector3 foodScale; // Skala asli makanan di meja
     public TextMeshProUGUI promptText; // Referensi ke UI Text untuk prompt
 
     private bool isPlayerInRange = false;
@@ -16,6 +18,8 @@ public class FoodItem : MonoBehaviour
         {
             promptText.gameObject.SetActive(false);
         }
+        foodScale = transform.lossyScale;
+        Debug.Log($"FoodItem {foodName} scale: {foodScale}");
     }
 
     private void OnTriggerEnter(Collider other)
@@ -38,7 +42,7 @@ public class FoodItem : MonoBehaviour
             Inventory inventory = other.GetComponent<Inventory>();
             if (inventory != null)
             {
-                inventory.AddItem(foodName, foodSprite);
+                inventory.AddItem(foodName, foodSprite, foodPrefab, foodScale);
                 // Tidak menyembunyikan item atau prompt, biarkan tetap aktif
             }
         }
