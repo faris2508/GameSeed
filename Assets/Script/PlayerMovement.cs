@@ -16,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
     public float respawnDelay = 2f; 
 
     private bool isDead = false;
+    [SerializeField] private Transform model;
 
     void Start()
     {
@@ -24,18 +25,56 @@ public class PlayerMovement : MonoBehaviour
 
         rb.linearDamping = 0.1f;
         rb.useGravity = true;
-        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
+        rb.constraints = RigidbodyConstraints.FreezeRotation;
     }
 
     void FixedUpdate()
     {
-        if (isDead) return; 
+        if (isDead) return;
 
         float turnInput = Input.GetAxis("Horizontal");
         transform.Rotate(0, turnInput * turnSpeed * Time.fixedDeltaTime, 0);
 
         float moveInput = Input.GetAxis("Vertical");
-        if (moveInput > 0)
+
+        bool isMoving = rb.linearVelocity.magnitude > 0.1f;
+        bool isPressingW = moveInput > 0;
+
+        if (Input.GetKey(KeyCode.Space) && isMoving)
+        {
+            rb.linearDamping = brakeDrag;
+            animator.SetBool("isBraking", true);
+
+            animator.SetBool("isWalking", false);
+            animator.SetBool("isIdleWalk", false);
+            animator.SetBool("isIdle", false);
+        }
+        else
+        {
+            rb.linearDamping = 0.1f;
+            animator.SetBool("isBraking", false);
+
+            if (!isMoving)
+            {
+                animator.SetBool("isIdle", true);
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isIdleWalk", false);
+            }
+            else if (isPressingW)
+            {
+                animator.SetBool("isWalking", true);
+                animator.SetBool("isIdleWalk", false);
+                animator.SetBool("isIdle", false);
+            }
+            else
+            {
+                animator.SetBool("isIdleWalk", true);
+                animator.SetBool("isWalking", false);
+                animator.SetBool("isIdle", false);
+            }
+        }
+
+        if (isPressingW)
         {
             Vector3 moveForce = transform.forward * moveInput * moveSpeed;
             rb.AddForce(moveForce, ForceMode.Acceleration);
@@ -45,16 +84,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            rb.linearVelocity = rb.linearVelocity * (1 - deceleration * Time.fixedDeltaTime);
-        }
-
-        if (Input.GetKey(KeyCode.Space))
-        {
-            rb.linearDamping = brakeDrag;
-        }
-        else
-        {
-            rb.linearDamping = 0.1f;
+            rb.linearVelocity *= (1 - deceleration * Time.fixedDeltaTime);
         }
     }
 
@@ -72,17 +102,22 @@ public class PlayerMovement : MonoBehaviour
 
         if (animator != null)
         {
-            animator.SetTrigger("Death"); 
+            animator.SetTrigger("Death");
         }
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
 
+        rb.constraints = RigidbodyConstraints.FreezeAll;
+
         yield return new WaitForSeconds(respawnDelay);
-        animator.SetTrigger("Idle");
 
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
+
+        animator.SetTrigger("Idle");
+
+        rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
 
         isDead = false;
     }
