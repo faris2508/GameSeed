@@ -5,6 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(menuName = "Level", fileName = "New Level")]
 public class LevelSO : ScriptableObject
 {
+    public int levelNumber;
     public string levelID;
     public CustomerSO[] customersData;
 

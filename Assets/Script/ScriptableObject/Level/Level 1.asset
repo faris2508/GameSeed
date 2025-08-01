@@ -1,0 +1,32 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d02edde4973a4664d96d0a8d62171ce8, type: 3}
+  m_Name: Level 1
+  m_EditorClassIdentifier: 
+  levelNumber: 0
+  levelID: 1
+  customersData:
+  - {fileID: 11400000, guid: 5360543ccbd2c7846a0fceaf7120a9b3, type: 2}
+  - {fileID: 11400000, guid: ae08a6d2d12dc334eafbeca08f65ffd6, type: 2}
+  - {fileID: 11400000, guid: ebf4f77373281bf4898ee87ad8af225c, type: 2}
+  currentCustomer: 0
+  goalCustomers: 5
+  totalCustomers: 3
+  currentScore: 0
+  totalScore: 0
+  highScore: 0
+  startTimeInSeconds: 90
+  isTimerRunning: 0
+  isLevelFinished: 0
+  scoreFor1Star: 100
+  scoreFor2Stars: 200
+  scoreFor3Stars: 300

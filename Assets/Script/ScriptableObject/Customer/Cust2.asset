@@ -9,6 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d7a82fdee5c65304d970da2246746f06, type: 3}
-  m_Name: Rendang
+  m_Script: {fileID: 11500000, guid: 3c6969dacf0f3fe4e9c51f384bcc8923, type: 3}
+  m_Name: Cust2
   m_EditorClassIdentifier: 
+  menu: {fileID: 0}
+  id: cust Ikan bakar
+  number: 2
+  Object: {fileID: 2250925615949906111, guid: 1b5ed45ea25662049ac970b62efd3423, type: 3}
+  waitingTime: 0

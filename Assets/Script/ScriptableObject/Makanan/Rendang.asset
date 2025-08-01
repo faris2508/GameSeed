@@ -9,6 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d02edde4973a4664d96d0a8d62171ce8, type: 3}
-  m_Name: Level 1
+  m_Script: {fileID: 11500000, guid: d7a82fdee5c65304d970da2246746f06, type: 3}
+  m_Name: Rendang
   m_EditorClassIdentifier: 
+  nama: Rendang
+  id: rendang
+  Object: {fileID: 0}
