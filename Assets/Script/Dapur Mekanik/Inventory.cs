@@ -6,24 +6,35 @@ using TMPro;
 public class Inventory : MonoBehaviour
 {
     private Stack<string> foodInventory = new Stack<string>();
-    private Stack<Sprite> foodSprites = new Stack<Sprite>(); // Untuk UI inventory
+    private Stack<Sprite> foodSprites = new Stack<Sprite>();
     private Stack<GameObject> foodPrefabs = new Stack<GameObject>();
-    private Stack<Vector3> foodScales = new Stack<Vector3>(); // Untuk skala makanan
+    private Stack<Vector3> foodScales = new Stack<Vector3>();
     private int maxInventorySize = 5;
-    public Image inventoryImage; // UI Image untuk menampilkan sprite makanan
+    public Image inventoryImage;
     public TextMeshProUGUI inventoryText;
 
-    public float scaleMultiplier = 20f; // Tambahkan di Inspector
-    public Vector3 rotationOffset = new Vector3(-90f, 0f, 0f); // Rotasi manual
+    public float throwScaleMultiplier = 20f;
+    public float stackScaleMultiplier = 1f;
+
+    public Vector3 rotationOffset = new Vector3(-90f, 0f, 0f);
     public float spawnHeightOffset = 3f;
-    public Image arrowImage; // UI Image untuk panah
-    public float throwForce = 10f; // Kekuatan lontaran
-    public int points = 0; // Poin pemain
-    public TextMeshProUGUI pointsText; // UI Text untuk menampilkan poin
+    public Image arrowImage;
+    public float throwForce = 10f;
+    public int points = 0;
+    public TextMeshProUGUI pointsText;
+
+    public Transform foodStackParent;
+    private List<GameObject> foodStackObjects = new List<GameObject>();
+    public float stackHeightOffset = 0.05f;
+    public Vector3 baseStackPosition = new Vector3(0.5f, 0, 0.5f);
+    public Vector3 baseStackRotation = Vector3.zero;
+    public float horizontalStackOffset = 0.3f;
+    private int maxPlatesPerStack = 2;
+    private Quaternion plateRotation = Quaternion.Euler(-90f, 0, 0);
 
     void Start()
     {
-        // Sembunyikan UI Image saat start
+        // ... (kode yang sudah ada)
         if (inventoryImage != null)
         {
             inventoryImage.gameObject.SetActive(false);
@@ -37,32 +48,21 @@ public class Inventory : MonoBehaviour
             arrowImage.gameObject.SetActive(false);
         }
         UpdatePointsUI();
+
+        // Terapkan rotasi dasar tumpukan ke objek parent
+        if (foodStackParent != null)
+        {
+            foodStackParent.localRotation = Quaternion.Euler(baseStackRotation);
+        }
     }
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.I)) // Tekan "I" untuk toggle UI (opsional)
+        if (Input.GetKeyDown(KeyCode.I))
         {
             UpdateInventoryUI();
         }
 
-        // // Update rotasi panah agar sejajar dengan pemain
-        // if (arrowImage != null && foodInventory.Count > 0)
-        // {
-        //     arrowImage.gameObject.SetActive(true);
-        //     // Asumsikan pemain menghadap ke arah transform.forward
-        //     Vector3 direction = transform.forward;
-        //     Vector2 screenPoint = Camera.main.WorldToScreenPoint(transform.position + direction);
-        //     arrowImage.rectTransform.position = screenPoint;
-        //     float angle = Mathf.Atan2(direction.z, direction.x) * Mathf.Rad2Deg - 90f;
-        //     arrowImage.rectTransform.rotation = Quaternion.Euler(0, 0, angle);
-        // }
-        // else if (arrowImage != null)
-        // {
-        //     arrowImage.gameObject.SetActive(false);
-        // }
-
-        // Lempar makanan dengan tombol "F"
         if (Input.GetKeyDown(KeyCode.F) && foodInventory.Count > 0)
         {
             ThrowFood();
@@ -78,6 +78,9 @@ public class Inventory : MonoBehaviour
             foodPrefabs.Push(foodPrefab);
             foodScales.Push(foodScale);
             Debug.Log($"Item {foodName} ditambahkan ke inventory.");
+
+            SpawnFoodPlate(foodPrefab, foodScale);
+
             UpdateInventoryUI();
         }
         else
@@ -96,27 +99,74 @@ public class Inventory : MonoBehaviour
             foodSprites.Pop();
             Debug.Log($"Melontarkan {food} dengan skala: {scale}, rotasi: {rotationOffset}");
 
-            // Instantiate makanan di depan pemain
             Vector3 spawnPosition = transform.position + transform.forward * 1f + Vector3.up * spawnHeightOffset;
             GameObject thrownFood = Instantiate(prefab, spawnPosition, Quaternion.Euler(rotationOffset));
-            thrownFood.transform.localScale = scale * scaleMultiplier; // Terapkan skala asli dengan pengali
+            thrownFood.transform.localScale = scale * throwScaleMultiplier;
             Rigidbody rb = thrownFood.GetComponent<Rigidbody>();
             if (rb == null)
             {
                 rb = thrownFood.AddComponent<Rigidbody>();
             }
-            rb.useGravity = false; // Nonaktifkan gravitasi
-            rb.linearDamping = 0f; // Ganti drag dengan linearDamping
-            rb.angularDamping = 0f; // Ganti angularDrag dengan angularDamping
-            rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY; // Kunci rotasi dan posisi Y
-            rb.linearVelocity = transform.forward * throwForce; // Gunakan velocity untuk gerakan lurus
+            rb.useGravity = false;
+            rb.linearDamping = 0f;
+            rb.angularDamping = 0f;
+            rb.constraints = RigidbodyConstraints.FreezeRotation | RigidbodyConstraints.FreezePositionY;
+            rb.linearVelocity = transform.forward * throwForce;
 
-            // Tambahkan script untuk mendeteksi tabrakan
             ThrownFood thrownFoodScript = thrownFood.AddComponent<ThrownFood>();
             thrownFoodScript.inventory = this;
 
+            if (foodStackObjects.Count > 0)
+            {
+                GameObject topPlate = foodStackObjects[foodStackObjects.Count - 1];
+                Destroy(topPlate);
+                foodStackObjects.RemoveAt(foodStackObjects.Count - 1);
+            }
+
             UpdateInventoryUI();
         }
+    }
+
+    private void SpawnFoodPlate(GameObject foodPrefab, Vector3 foodScale)
+    {
+        int currentCount = foodStackObjects.Count;
+        int stackIndex = currentCount / maxPlatesPerStack;
+        int plateIndexInStack = currentCount % maxPlatesPerStack;
+
+        Vector3 stackPosition = baseStackPosition;
+        if (stackIndex == 1) {
+            stackPosition += new Vector3(horizontalStackOffset, 0, 0);
+        } else if (stackIndex == 2) {
+            stackPosition += new Vector3(horizontalStackOffset, stackHeightOffset * 2, 0);
+        }
+
+        Vector3 platePosition = new Vector3(0, plateIndexInStack * stackHeightOffset, 0);
+        if (stackIndex == 2) {
+            platePosition = Vector3.zero;
+        }
+
+        // Hitung posisi akhir relatif terhadap parent, tanpa rotasi yang rumit
+        Vector3 spawnPosition = stackPosition + platePosition;
+
+        // Instantiate piring sebagai anak dari FoodStackParent
+        GameObject newPlate = Instantiate(foodPrefab, foodStackParent);
+        newPlate.transform.localPosition = spawnPosition;
+        newPlate.transform.localRotation = plateRotation;
+        newPlate.transform.localScale = foodScale * stackScaleMultiplier;
+        
+        Rigidbody rb = newPlate.GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            Destroy(rb);
+        }
+        
+        Collider col = newPlate.GetComponent<Collider>();
+        if (col != null)
+        {
+            Destroy(col);
+        }
+
+        foodStackObjects.Add(newPlate);
     }
 
     public void AddPoints(int amount)
@@ -132,16 +182,15 @@ public class Inventory : MonoBehaviour
         {
             if (foodSprites.Count > 0)
             {
-                inventoryImage.sprite = foodSprites.Peek(); // Ambil sprite teratas
+                inventoryImage.sprite = foodSprites.Peek();
                 inventoryImage.gameObject.SetActive(true);
             }
             else
             {
-                inventoryImage.gameObject.SetActive(false); // Sembunyikan jika inventory kosong
+                inventoryImage.gameObject.SetActive(false);
             }
         }
 
-        // Update UI Text untuk daftar makanan
         if (inventoryText != null)
         {
             if (foodInventory.Count > 0)
@@ -156,11 +205,11 @@ public class Inventory : MonoBehaviour
             }
             else
             {
-                inventoryText.gameObject.SetActive(false); // Sembunyikan jika inventory kosong
+                inventoryText.gameObject.SetActive(false);
             }
         }
     }
-    
+
     private void UpdatePointsUI()
     {
         if (pointsText != null)
