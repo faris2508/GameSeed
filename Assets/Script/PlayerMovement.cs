@@ -4,7 +4,7 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody rb;
-    private Animator animator;
+    public Animator animator;
 
     public float moveSpeed = 15f;
     public float maxSpeed = 25f;
@@ -17,14 +17,18 @@ public class PlayerMovement : MonoBehaviour
     public Transform respawnPoint;
     public float respawnDelay = 2f;
 
-    public ParticleSystem driftParticles; // Particle untuk drift
-    public ParticleSystem brakeParticles; // Particle untuk rem
+    public ParticleSystem driftParticles;
+    public ParticleSystem brakeParticles;
 
     private bool isDead = false;
     [SerializeField] private Transform model;
+
     [Header("SFX")]
-    public AudioSource audioSource; // Audio Source untuk SFX
-    public AudioClip deathSFX; 
+    public AudioSource audioSource;
+    public AudioClip deathSFX;
+
+    public Inventory playerInventory;
+    [SerializeField] private bool isCarryingItem;
 
     void Start()
     {
@@ -34,21 +38,30 @@ public class PlayerMovement : MonoBehaviour
         rb.linearDamping = 0.1f;
         rb.useGravity = true;
 
-        // Bekukan semua rotasi, kita atur rotasi manual lewat transform.Rotate()
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
+    }
+
+    void Update()
+    {
+        if (playerInventory != null)
+        {
+            isCarryingItem = playerInventory.isCarryingItem;
+        }
     }
 
     void FixedUpdate()
     {
         if (isDead) return;
 
-        // Reset rotasi fisika agar tidak muter liar
         rb.angularVelocity = Vector3.zero;
 
         float turnInput = Input.GetAxis("Horizontal");
         float moveInput = Input.GetAxis("Vertical");
         bool isMoving = rb.linearVelocity.magnitude > 0.1f;
         bool isPressingW = moveInput > 0;
+        bool isCarrying = isCarryingItem;
+
+        ResetAllAnimatorBools();
 
         // DRIFT
         if (Input.GetKey(KeyCode.LeftShift) && isMoving)
@@ -56,73 +69,60 @@ public class PlayerMovement : MonoBehaviour
             transform.Rotate(0, turnInput * turnSpeed * driftTurnMultiplier * Time.fixedDeltaTime, 0);
             rb.linearDamping = driftDrag;
             animator.SetBool("isDrifting", true);
-
-            // Aktifkan drift particle
             if (driftParticles != null && !driftParticles.isPlaying) driftParticles.Play();
         }
         else
         {
             transform.Rotate(0, turnInput * turnSpeed * Time.fixedDeltaTime, 0);
-            animator.SetBool("isDrifting", false);
-
-            // Matikan drift particle
             if (driftParticles != null && driftParticles.isPlaying) driftParticles.Stop();
         }
 
-        if (Input.GetKey(KeyCode.S) && rb.linearVelocity.magnitude > 0.5f && !Input.GetKey(KeyCode.LeftShift))
+        // BRAKING
+        if (Input.GetKey(KeyCode.S) && isMoving && !Input.GetKey(KeyCode.LeftShift))
         {
             rb.linearDamping = brakeDrag;
-            animator.SetBool("isBraking", true);
-            animator.SetBool("isWalking", false);
-            animator.SetBool("isIdleWalk", false);
-            animator.SetBool("isIdle", false);
+            if (isCarrying)
+                animator.SetBool("isCarryingBraking", true);
+            else
+                animator.SetBool("isBraking", true);
 
-        // Aktifkan brake particle
-        if (brakeParticles != null && !brakeParticles.isPlaying) brakeParticles.Play();
+            if (brakeParticles != null && !brakeParticles.isPlaying) brakeParticles.Play();
         }
-        else if (Input.GetKey(KeyCode.S) && rb.linearVelocity.magnitude <= 0.5f) // Tekan S tapi diam
+        else
         {
             rb.linearDamping = 0.1f;
-            animator.SetBool("isBraking", false);
-            animator.SetBool("isWalking", false);
-            animator.SetBool("isIdleWalk", false);
-            animator.SetBool("isIdle", true);
-
-            // Matikan brake particle
             if (brakeParticles != null && brakeParticles.isPlaying) brakeParticles.Stop();
-        }
-        else
-        {
-        rb.linearDamping = 0.1f;
-        animator.SetBool("isBraking", false);
 
-        // Matikan brake particle
-        if (brakeParticles != null && brakeParticles.isPlaying) brakeParticles.Stop();
+            // ANIMASI IDLE / WALK / IDLEWALK
+            if (!isMoving)
+            {
+                if (isCarrying)
+                    animator.SetBool("isCarryingIdle", true);
+                else
+                    animator.SetBool("isIdle", true);
+            }
+            else if (isPressingW)
+            {
+                if (isCarrying)
+                    animator.SetBool("isCarryingWalk", true);
+                else
+                    animator.SetBool("isWalking", true);
+            }
+            else
+            {
+                if (isCarrying)
+                    animator.SetBool("isCarryingIdleWalk", true);
+                else
+                    animator.SetBool("isIdleWalk", true);
+            }
+        }
 
-        if (!isMoving)
-        {
-            animator.SetBool("isIdle", true);
-            animator.SetBool("isWalking", false);
-            animator.SetBool("isIdleWalk", false);
-        }
-        else if (isPressingW)
-        {
-            animator.SetBool("isWalking", true);
-            animator.SetBool("isIdleWalk", false);
-            animator.SetBool("isIdle", false);
-        }
-        else
-        {
-            animator.SetBool("isIdleWalk", true);
-            animator.SetBool("isWalking", false);
-            animator.SetBool("isIdle", false);
-        }
-    }
+        // GERAKAN FISIK
+        float currentMoveSpeed = isCarrying ? moveSpeed * 0.7f : moveSpeed;
 
-        // GERAKAN MAJU & MUNDUR
         if (isPressingW)
         {
-            Vector3 moveForce = transform.forward * moveInput * moveSpeed;
+            Vector3 moveForce = transform.forward * moveInput * currentMoveSpeed;
             rb.AddForce(moveForce, ForceMode.Acceleration);
 
             if (rb.linearVelocity.magnitude > maxSpeed)
@@ -130,7 +130,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (Input.GetKey(KeyCode.S) && !isMoving)
         {
-            Vector3 moveForce = -transform.forward * moveSpeed * 0.5f;
+            Vector3 moveForce = -transform.forward * currentMoveSpeed * 0.5f;
             rb.AddForce(moveForce, ForceMode.Acceleration);
         }
         else
@@ -159,12 +159,17 @@ public class PlayerMovement : MonoBehaviour
         if (deathSFX != null && audioSource != null)
             audioSource.PlayOneShot(deathSFX);
 
+        // Pilih animasi kematian berdasarkan apakah membawa barang
+        string finalDeathTrigger = isCarryingItem ? "CarryingDeath" : deathAnimationTrigger;
+
         if (animator != null)
-            animator.SetTrigger(deathAnimationTrigger);
+        {
+            ResetAllAnimatorBools();
+            animator.SetTrigger(finalDeathTrigger);
+        }
 
         rb.linearVelocity = Vector3.zero;
         rb.angularVelocity = Vector3.zero;
-
         rb.constraints = RigidbodyConstraints.FreezeAll;
 
         yield return new WaitForSeconds(respawnDelay);
@@ -172,11 +177,41 @@ public class PlayerMovement : MonoBehaviour
         transform.position = respawnPoint.position;
         transform.rotation = respawnPoint.rotation;
 
-        animator.SetTrigger("Idle");
+        if (playerInventory != null)
+        {
+            playerInventory.ClearInventory(); // Buat fungsi ini di Inventory.cs
+            isCarryingItem = false;
+        }
 
-        // Kembali freeze rotasi penuh
+        if (animator != null)
+        {
+            ResetAllAnimatorBools();
+            animator.SetBool("isIdle", true); // Kembali ke idle biasa
+        }
         rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationY | RigidbodyConstraints.FreezeRotationZ;
-
         isDead = false;
+    }
+
+    public void PlayThrowAnimation()
+    {
+        if (animator != null && isCarryingItem)
+        {
+            animator.SetTrigger("ThrowItem");
+        }
+    }
+
+    private void ResetAllAnimatorBools()
+    {
+        animator.SetBool("isIdle", false);
+        animator.SetBool("isWalking", false);
+        animator.SetBool("isIdleWalk", false);
+        animator.SetBool("isBraking", false);
+
+        animator.SetBool("isCarryingIdle", false);
+        animator.SetBool("isCarryingWalk", false);
+        animator.SetBool("isCarryingIdleWalk", false);
+        animator.SetBool("isCarryingBraking", false);
+
+        animator.SetBool("isDrifting", false);
     }
 }
