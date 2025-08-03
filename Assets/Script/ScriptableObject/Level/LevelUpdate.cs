@@ -21,7 +21,9 @@ public class LevelUpdate : MonoBehaviour
 
     [Header("Customer Spawn")]
     public GameObject orderPrefab;
-    public Transform spawnPoints;
+    public List<Transform> spawnPoints;
+    public Vector3 spawnRotation;
+    [SerializeField] private int customersPerWave = 3;
     public float spawnInterval = 60f; // Jarak antar spawn
     private Coroutine spawnCoroutine;
     public bool isOrderTaken = false;
@@ -175,41 +177,43 @@ public class LevelUpdate : MonoBehaviour
 
         spawnCoroutine = StartCoroutine(SpawnCustomersCoroutine(levels[levelIndex]));
     }
+
     IEnumerator SpawnCustomersCoroutine(LevelSO levelData)
+{
+    yield return new WaitForSecondsRealtime(3f);
+    int spawnCount = 0;
+
+    while (isTimerRunning && spawnCount < maxSpawn)
     {
-        yield return new WaitForSecondsRealtime(3f);
-        int spawnCount = 0;
-
-        while (isTimerRunning && spawnCount < maxSpawn)
+        for (int i = 0; i < customersPerWave && spawnCount < maxSpawn; i++)
         {
-
             if (levelData.customersData.Length > 0)
             {
-
-
                 int randomIndex = Random.Range(0, levelData.customersData.Length);
-                Debug.Log(levelData.customersData[randomIndex].id);
-                //Debug.Log(customerIndex);
-                CustomerSO selected = currentLevel.customersData[randomIndex];
+                CustomerSO selected = levelData.customersData[randomIndex];
 
-                // Simpan ke list
                 SpawnedCustomer sc = new SpawnedCustomer(selected, selected.waitingTime, selected.menu);
                 spawnedCustomers.Add(sc);
                 spawnedCustomers[customerIndex].waitingTime = waitingTime;
-                Debug.Log("Customer " + customerIndex + "WaitingTime :" + spawnedCustomers[customerIndex].waitingTime);
-                //GameObject prefab = levelData.customersData[randomIndex].Object;
-                //Instantiate(prefab, spawnPoints.position, Quaternion.identity);
+
+                // Ambil spawn point secara acak atau sesuai urutan
+                Transform spawnPoint = spawnPoints[spawnCount % spawnPoints.Count];
+                GameObject prefab = selected.Object;
+
+                GameObject customerGO = Instantiate(prefab, spawnPoint.position, Quaternion.Euler(spawnRotation));
+                //sc.instance = customerGO;
+
                 customerIndex++;
                 spawnCount++;
-                StartCoroutine(CustomerWaitingTimer(sc));
+                StartCoroutine(CustomerWaitingTimer(sc, customerGO));
             }
-
-            yield return new WaitForSecondsRealtime(spawnInterval);
-
         }
-    }
 
-    IEnumerator CustomerWaitingTimer(SpawnedCustomer customer)
+        yield return new WaitForSecondsRealtime(spawnInterval);
+    }
+}
+
+        IEnumerator CustomerWaitingTimer(SpawnedCustomer customer, GameObject customerGO)
     {
         float time = customer.waitingTime;
 
@@ -221,8 +225,10 @@ public class LevelUpdate : MonoBehaviour
 
         Debug.Log("Customer sudah pergi (waktu habis): " + customer.data.id);
 
-        //if (customer.instance != null)
-        //Destroy(customer.instance);
+        if (customerGO != null)
+        {
+            Destroy(customerGO);
+        }
     }
 
     public void SpawnOrder()

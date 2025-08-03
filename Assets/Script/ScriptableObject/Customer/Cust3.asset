@@ -15,5 +15,6 @@ MonoBehaviour:
   menu: {fileID: 0}
   id: cust ayam pop
   number: 4
-  Object: {fileID: 2250925615949906111, guid: 1b5ed45ea25662049ac970b62efd3423, type: 3}
+  Object: {fileID: 2959323953661481805, guid: a13de1baf53ac50478cfdc60cea3b858, type: 3}
+  Order: {fileID: 0}
   waitingTime: 0
