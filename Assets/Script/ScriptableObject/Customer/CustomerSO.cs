@@ -9,6 +9,6 @@ public class CustomerSO : ScriptableObject
     public string id;
     public int number;
     public GameObject Object;
-    public GameObject Order;
+    public Sprite Order;
     public float waitingTime;
 }

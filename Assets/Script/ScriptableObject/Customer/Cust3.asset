@@ -16,5 +16,5 @@ MonoBehaviour:
   id: cust ayam pop
   number: 4
   Object: {fileID: 2959323953661481805, guid: a13de1baf53ac50478cfdc60cea3b858, type: 3}
-  Order: {fileID: 0}
-  waitingTime: 0
+  Order: {fileID: 21300000, guid: 8c659593e5b62484a9f4c2d2b50e71ca, type: 3}
+  waitingTime: 20

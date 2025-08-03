@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using NUnit.Framework.Internal;
+using System.Linq;
 
 public class LevelUpdate : MonoBehaviour
 {
@@ -36,12 +37,31 @@ public class LevelUpdate : MonoBehaviour
     private int customerIndex = 0;
     private int maxSpawn;
 
+    [Header("Player & Order Interaction")]
+    public Transform player; // drag player object ke sini
+    public float interactRange = 2f;
+    private GameObject currentCustomerGO = null;
+    private CustomerSO currentCustomerData = null;
+    private CustomerIdentity customerIdentity;
+    public TextMeshProUGUI promptText;
+    private bool isNearCustomer = false;
+
     //level section
     /*public void getLevelData(LevelSO currentLevel)
     {
         
         
     }*/
+
+    public static LevelUpdate Instance;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+    }
+
+
     void Start()
     {
         currentLevel = levels[currentLevelIndex];
@@ -72,46 +92,18 @@ public class LevelUpdate : MonoBehaviour
             }
         }
 
-        if (isOrderTaken)
+        if (isNearCustomer && Input.GetKeyDown(KeyCode.E))
+        {
+            if (currentCustomerData != null)
+            {
+                ShowOrderUI(currentCustomerData);
+                isOrderTaken = true;
+            }
+        }
+
+        /*if (isOrderTaken)
         {
             orderPrefab.SetActive(true);
-        }
-        
-        /*if (isCustomerWaiting && isServed)
-        {
-            //float[] currentWaitingTime = new float[currentLevel.totalCustomers];
-
-            for (int i = 0; i < currentLevel.totalCustomers; i++)
-            {
-                
-                var customer = spawnedCustomers[i];
-                //customer.waitingTime = waitingTime;
-                if (spawnedCustomers[i].waitingTime > 0)
-                {
-                    spawnedCustomers[i].waitingTime -= Time.deltaTime;
-                    if (spawnedCustomers[i].waitingTime < 0) spawnedCustomers[i].waitingTime = 0;
-                    Debug.Log(spawnedCustomers[i].waitingTime);
-                }
-                if (spawnedCustomers[i].waitingTime == 0)
-                {
-                    Debug.Log("Customer " + i + " sudah pergi!");
-                    // TODO: Destroy GameObject-nya atau sembunyikan
-                }
-                //currentLevel.customersData[i].waitingTime = waitingTime;
-                    /*if (currentLevel.customersData[i].waitingTime > 0)
-                    {
-                        currentLevel.customersData[i].waitingTime -= Time.deltaTime;
-                        if (currentLevel.customersData[i].waitingTime < 0)
-                        currentLevel.customersData[i].waitingTime = 0;
-
-                    }
-                    if (currentLevel.customersData[i].waitingTime == 0)
-                    {
-                        Debug.Log("Customer " + i + " sudah pergi!");
-
-                        // TODO: Destroy GameObject-nya atau sembunyikan
-                    }
-            }
         }*/
     }
 
@@ -154,12 +146,14 @@ public class LevelUpdate : MonoBehaviour
         public CustomerSO data;
         public float waitingTime;
         public MenuSO menuCustomer;
+        public Sprite orderUI;
 
-        public SpawnedCustomer(CustomerSO customerData, float time, MenuSO menu)
+        public SpawnedCustomer(CustomerSO customerData, float time, MenuSO menu, Sprite order)
         {
             data = customerData;
             waitingTime = time;
             menuCustomer = menu;
+            orderUI = order;
         }
     }
     public List<SpawnedCustomer> spawnedCustomers = new List<SpawnedCustomer>();
@@ -179,41 +173,65 @@ public class LevelUpdate : MonoBehaviour
     }
 
     IEnumerator SpawnCustomersCoroutine(LevelSO levelData)
-{
-    yield return new WaitForSecondsRealtime(3f);
-    int spawnCount = 0;
-
-    while (isTimerRunning && spawnCount < maxSpawn)
     {
-        for (int i = 0; i < customersPerWave && spawnCount < maxSpawn; i++)
+        yield return new WaitForSecondsRealtime(3f); // Delay awal
+
+        int spawnCount = 0;
+
+        while (isTimerRunning && spawnCount < maxSpawn)
         {
             if (levelData.customersData.Length > 0)
             {
                 int randomIndex = Random.Range(0, levelData.customersData.Length);
                 CustomerSO selected = levelData.customersData[randomIndex];
 
-                SpawnedCustomer sc = new SpawnedCustomer(selected, selected.waitingTime, selected.menu);
+                // Gunakan waiting time dari data customer langsung
+                SpawnedCustomer sc = new SpawnedCustomer(selected, selected.waitingTime, selected.menu, selected.Order);
                 spawnedCustomers.Add(sc);
-                spawnedCustomers[customerIndex].waitingTime = waitingTime;
 
-                // Ambil spawn point secara acak atau sesuai urutan
                 Transform spawnPoint = spawnPoints[spawnCount % spawnPoints.Count];
                 GameObject prefab = selected.Object;
 
                 GameObject customerGO = Instantiate(prefab, spawnPoint.position, Quaternion.Euler(spawnRotation));
-                //sc.instance = customerGO;
+                CustomerIdentity identity = customerGO.AddComponent<CustomerIdentity>();
+                if (identity != null)
+                {
+                    identity.customerData = selected;
 
-                customerIndex++;
-                spawnCount++;
+                    // Cari OrderSpawnPoint dari child prefab customer
+                    Transform spawnPointUI = customerGO.transform.Find("OrderSpawnPoint");
+                    if (spawnPointUI != null)
+                    {
+                        identity.orderSpawnPoint = spawnPointUI;
+                    }
+                    else
+                    {
+                        Debug.LogWarning("OrderSpawnPoint not found in customer prefab: " + customerGO.name);
+                    }
+                }
+                else
+                {
+                    Debug.LogWarning("CustomerTrigger not found on customer prefab: " + customerGO.name);
+                }
+
+
+                //Transform spawnPointUI = customerGO.GetComponentsInChildren<Transform>(true)
+                //                   .FirstOrDefault(t => t.name == "OrderSpawnPoint");
+
+
+                customerGO.tag = "Customer";
+
                 StartCoroutine(CustomerWaitingTimer(sc, customerGO));
+
+                spawnCount++;
             }
+
+            // Tunggu sebelum spawn customer berikutnya
+            yield return new WaitForSecondsRealtime(spawnInterval);
         }
-
-        yield return new WaitForSecondsRealtime(spawnInterval);
     }
-}
 
-        IEnumerator CustomerWaitingTimer(SpawnedCustomer customer, GameObject customerGO)
+    IEnumerator CustomerWaitingTimer(SpawnedCustomer customer, GameObject customerGO)
     {
         float time = customer.waitingTime;
 
@@ -240,6 +258,74 @@ public class LevelUpdate : MonoBehaviour
             //Debug.Log("Order taken");
         }
 
-        
+
     }
+
+    public void OnCustomerTriggerEnter(CustomerIdentity customer)
+    {
+        customerIdentity = customer;
+        currentCustomerData = customer.customerData;
+        isNearCustomer = true;
+
+        if (promptText != null)
+        {
+            promptText.text = "Tekan E untuk mengambil pesanan";
+            promptText.gameObject.SetActive(true);
+        }
+    }
+
+    public void OnCustomerTriggerExit(CustomerIdentity customer)
+    {
+        if (customerIdentity == customer)
+        {
+            customerIdentity = null;
+            currentCustomerData = null;
+            isNearCustomer = false;
+
+            if (promptText != null)
+                promptText.gameObject.SetActive(false);
+        }
+    }
+
+
+
+    void ShowOrderUI(CustomerSO customer)
+    {
+        Debug.Log("Spawn UI");
+        if (orderPrefab == null || customerIdentity == null) return;
+
+        if (customerIdentity.currentOrderUI != null) return;
+
+        GameObject orderUI = Instantiate(orderPrefab, customerIdentity.orderSpawnPoint.position, Quaternion.identity);
+        orderUI.SetActive(true);
+        orderUI.transform.SetParent(customerIdentity.orderSpawnPoint);
+        orderUI.transform.localPosition = Vector3.zero;
+
+        customerIdentity.currentOrderUI = orderUI;
+
+        FollowUI followScript = orderUI.GetComponent<FollowUI>();
+        if (followScript != null)
+        {
+            followScript.SetTarget(customerIdentity.orderSpawnPoint);
+        }
+
+        // Ambil Sprite dari customer.order.orderSprite
+        Sprite orderSprite = customer.Order;
+        if (orderSprite != null)
+        {
+            UnityEngine.UI.Image image = orderUI.GetComponentInChildren<UnityEngine.UI.Image>();
+            if (image != null)
+                image.sprite = orderSprite;
+                image.preserveAspect = true;
+        }
+        else
+        {
+            Debug.LogWarning("Order sprite not found in CustomerSO: " + customer.name);
+        }
+    
+    }
+
+
+
+
 }

@@ -16,5 +16,5 @@ MonoBehaviour:
   id: cust Ikan bakar
   number: 2
   Object: {fileID: 2959323953661481805, guid: a13de1baf53ac50478cfdc60cea3b858, type: 3}
-  Order: {fileID: 0}
-  waitingTime: 0
+  Order: {fileID: 21300000, guid: b27cbf9c5e2e48c47b0bf7a2a85bdb53, type: 3}
+  waitingTime: 20
