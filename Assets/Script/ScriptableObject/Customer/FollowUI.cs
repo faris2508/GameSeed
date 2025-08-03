@@ -3,38 +3,20 @@ using UnityEngine;
 
 public class FollowUI : MonoBehaviour
 {
-    public Transform target; // GameObject 3D yang diikuti
-    public Vector3 offset;   // Offset posisi dari atas object
-    public Camera mainCamera; // Kamera utama
-    public Image pesanan;
+    public Transform target; // Posisi yang akan diikuti (biasanya customer.orderSpawnPoint)
+    public Vector3 offset = new Vector3(0, 2f, 0); // Offset di atas kepala
 
-    private RectTransform rectTransform;
-
-    void Start()
+    void LateUpdate()
     {
-        
-        rectTransform = GetComponent<RectTransform>();
-        if (mainCamera == null)
-            mainCamera = Camera.main;
+        if (target != null)
+        {
+            transform.position = target.position + offset;
+            //transform.LookAt(Camera.main.transform); // Supaya selalu menghadap kamera
+        }
     }
 
-    void Update()
+    public void SetTarget(Transform newTarget)
     {
-        if (target == null || mainCamera == null)
-            return;
-
-        // Konversi world position ke screen position
-        Vector3 screenPos = mainCamera.WorldToScreenPoint(target.position + offset);
-
-        // Jika target ada di depan kamera
-        if (screenPos.z > 0)
-        {
-            rectTransform.position = screenPos;
-        }
-        else
-        {
-            // Target di belakang kamera, bisa sembunyikan
-            rectTransform.position = new Vector3(-1000, -1000, 0);
-        }
+        target = newTarget;
     }
 }
