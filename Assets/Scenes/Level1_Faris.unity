@@ -1205,6 +1205,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryImage: {fileID: 645408343}
   inventoryText: {fileID: 282004629}
+  smashSound: {fileID: 0}
   throwScaleMultiplier: 20
   stackScaleMultiplier: 5
   rotationOffset: {x: -90, y: 0, z: 0}
@@ -4275,6 +4276,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   inventoryImage: {fileID: 645408343}
   inventoryText: {fileID: 282004629}
+  smashSound: {fileID: 8300000, guid: adb67a0e75f50de488aceaef08e86d83, type: 3}
   throwScaleMultiplier: 20
   stackScaleMultiplier: 4.5
   rotationOffset: {x: -90, y: 0, z: 0}

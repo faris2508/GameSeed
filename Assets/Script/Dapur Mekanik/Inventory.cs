@@ -13,6 +13,8 @@ public class Inventory : MonoBehaviour
     public Image inventoryImage;
     public TextMeshProUGUI inventoryText;
 
+    public AudioClip smashSound;
+
     public float throwScaleMultiplier = 20f;
     public float stackScaleMultiplier = 1f;
 
@@ -115,6 +117,7 @@ public class Inventory : MonoBehaviour
 
             ThrownFood thrownFoodScript = thrownFood.AddComponent<ThrownFood>();
             thrownFoodScript.inventory = this;
+            thrownFoodScript.SetSmashSound(smashSound);
 
             if (foodStackObjects.Count > 0)
             {
