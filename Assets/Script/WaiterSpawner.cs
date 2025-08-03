@@ -1,6 +1,5 @@
 using UnityEngine;
 using System.Collections;
-using System.Collections.Generic;
 
 public class WaiterSpawner : MonoBehaviour
 {
@@ -19,12 +18,23 @@ public class WaiterSpawner : MonoBehaviour
     public float waiterSpeed = 10f;
     public float destroyDelay = 15f; // Safety timer
 
+    [Header("Tutorial Settings")]
+    public TutorialTrigger tutorialOnFirstSpawn; // Drag script TutorialTrigger di sini
+    private bool hasShownTutorial = false; // Cek supaya hanya muncul sekali
+
     public void SpawnRandomWaiter()
     {
         if (waiterPrefab == null)
         {
             Debug.LogWarning("Waiter prefab belum diassign!");
             return;
+        }
+
+        // 🔹 Jika ini spawn pertama → jalankan tutorial
+        if (!hasShownTutorial && tutorialOnFirstSpawn != null)
+        {
+            tutorialOnFirstSpawn.StartTutorialExternally();
+            hasShownTutorial = true;
         }
 
         // Pilih jalur random
@@ -40,14 +50,18 @@ public class WaiterSpawner : MonoBehaviour
         else if (lane == 1) waypoints = centerLaneWaypoints;
         else if (lane == 2) waypoints = rightLaneWaypoints;
 
-        if (waypoints == null || waypoints.Length == 0)
+        if (waypoints == null || waypoints.Length < 2)
         {
-            Debug.LogWarning("Waypoint untuk lane " + lane + " belum diisi!");
+            Debug.LogWarning("Waypoint untuk lane " + lane + " belum diisi dengan benar!");
             return;
         }
 
-        // Spawn waiter di posisi waypoint pertama
-        GameObject newWaiter = Instantiate(waiterPrefab, waypoints[0].position, waypoints[0].rotation);
+        // Tentukan arah dari waypoint[0] ke waypoint[1]
+        Vector3 direction = (waypoints[1].position - waypoints[0].position).normalized;
+        Quaternion lookRotation = Quaternion.LookRotation(direction, Vector3.up);
+
+        // Spawn waiter menghadap arah jalurnya
+        GameObject newWaiter = Instantiate(waiterPrefab, waypoints[0].position, lookRotation);
 
         // Mulai coroutine untuk melewati semua waypoint
         StartCoroutine(MoveThroughWaypoints(newWaiter, waypoints));
@@ -62,7 +76,6 @@ public class WaiterSpawner : MonoBehaviour
         {
             Vector3 targetPos = waypoints[currentWaypoint].position;
 
-            // Gerakkan menuju waypoint
             while (Vector3.Distance(waiter.transform.position, targetPos) > 0.1f)
             {
                 if (waiter == null) yield break;
@@ -73,13 +86,16 @@ public class WaiterSpawner : MonoBehaviour
                     waiterSpeed * Time.deltaTime
                 );
 
+                Vector3 moveDir = (targetPos - waiter.transform.position).normalized;
+                if (moveDir != Vector3.zero)
+                    waiter.transform.rotation = Quaternion.LookRotation(moveDir, Vector3.up);
+
                 yield return null;
 
                 timer += Time.deltaTime;
                 if (timer > destroyDelay) break;
             }
 
-            // Lanjut ke waypoint berikutnya
             currentWaypoint++;
         }
 
