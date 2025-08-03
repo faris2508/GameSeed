@@ -1085,9 +1085,15 @@ MonoBehaviour:
   turnSpeed: 120
   deceleration: 0.3
   brakeDrag: 1
+  driftTurnMultiplier: 1.5
+  driftDrag: 0.8
   respawnPoint: {fileID: 672654952}
   respawnDelay: 2
+  driftParticles: {fileID: 0}
+  brakeParticles: {fileID: 0}
   model: {fileID: 0}
+  audioSource: {fileID: 0}
+  deathSFX: {fileID: 0}
 --- !u!54 &503321184
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1483,7 +1489,6 @@ Transform:
   m_Children:
   - {fileID: 314857174}
   - {fileID: 111442872}
-  - {fileID: 1918911463}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &709336679
@@ -4209,9 +4214,15 @@ MonoBehaviour:
   turnSpeed: 140
   deceleration: 0.3
   brakeDrag: 1
+  driftTurnMultiplier: 1.5
+  driftDrag: 0.8
   respawnPoint: {fileID: 1962260692}
   respawnDelay: 2
+  driftParticles: {fileID: 0}
+  brakeParticles: {fileID: 0}
   model: {fileID: 0}
+  audioSource: {fileID: 0}
+  deathSFX: {fileID: 0}
 --- !u!54 &1843718379
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4644,7 +4655,7 @@ RectTransform:
   - {fileID: 1896254722}
   - {fileID: 645408342}
   - {fileID: 859918934}
-  m_Father: {fileID: 701536347}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5002,4 +5013,5 @@ SceneRoots:
   - {fileID: 138602554}
   - {fileID: 701536347}
   - {fileID: 1963926630}
+  - {fileID: 1918911463}
   - {fileID: 1962260692}
