@@ -126,6 +126,23 @@ public class Inventory : MonoBehaviour
                 foodStackObjects.RemoveAt(foodStackObjects.Count - 1);
             }
 
+            PlayerMovement playerMovement = GetComponent<PlayerMovement>();
+            if (playerMovement != null && playerMovement.animator != null)
+            {
+                // 🔥 Picu animasi lempar!
+                playerMovement.animator.SetTrigger("ThrowItem");
+                
+                // Jika ini adalah item terakhir
+                if (foodInventory.Count == 0)
+                {
+                    playerMovement.animator.SetBool("isCarryingIdle", false);
+                    playerMovement.animator.SetBool("isCarryingWalk", false);
+                    playerMovement.animator.SetBool("isCarryingIdleWalk", false);
+                    playerMovement.animator.SetBool("isIdle", true);
+                }
+            }
+
+
             UpdateInventoryUI();
         }
     }
@@ -219,5 +236,29 @@ public class Inventory : MonoBehaviour
         {
             pointsText.text = $"Poin: {points}";
         }
+    }
+
+    public bool isCarryingItem
+    {
+        get { return foodInventory.Count > 0; }
+    }
+
+    public void ClearInventory()
+    {
+        foodInventory.Clear();
+        foodSprites.Clear();
+        foodPrefabs.Clear();
+        foodScales.Clear();
+
+        foreach (GameObject plate in foodStackObjects)
+        {
+            if (plate != null)
+                Destroy(plate);
+        }
+        foodStackObjects.Clear();
+
+        if (inventoryImage != null) inventoryImage.gameObject.SetActive(false);
+        if (inventoryText != null) inventoryText.gameObject.SetActive(false);
+        if (arrowImage != null) arrowImage.gameObject.SetActive(false);
     }
 }
