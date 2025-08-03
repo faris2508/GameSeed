@@ -15,19 +15,29 @@ public class FixedFlipCamera : MonoBehaviour
     {
         if (player == null) return;
 
+        // Cek arah player
         float playerY = Mathf.DeltaAngle(0, player.eulerAngles.y);
-
         if (playerY > flipThreshold || playerY < -flipThreshold)
-        {
             facingForward = false;
-        }
         else
-        {
             facingForward = true;
-        }
 
+        // Tentukan rotasi target
         Quaternion targetRotation = Quaternion.Euler(facingForward ? forwardRotation : backwardRotation);
         transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, Time.deltaTime * smoothSpeed);
-        transform.position = player.position + targetRotation * offset;
+
+        // POSISI KAMERA: hanya mengikuti gerakan maju/mundur player (Z), X tetap di posisi kamera
+        Vector3 camPos = transform.position;
+
+        // Misalnya kita hanya mau kamera mengikuti Z player + offset
+        camPos.z = player.position.z + (facingForward ? offset.z : -offset.z);
+
+        // Y kamera tetap bisa ikut offset
+        camPos.y = player.position.y + offset.y;
+
+        // X kamera tetap (tidak mengikuti player)
+        // Kalau mau ikutin sedikit, bisa pakai Mathf.Lerp di sini
+
+        transform.position = Vector3.Lerp(transform.position, camPos, Time.deltaTime * smoothSpeed);
     }
 }
