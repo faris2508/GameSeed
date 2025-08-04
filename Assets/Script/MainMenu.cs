@@ -9,7 +9,7 @@ public class MainMenu : MonoBehaviour
     // Dipanggil saat tombol Start ditekan
     public void StartGame()
     {
-        SceneManager.LoadScene("Level1"); 
+        SceneManager.LoadScene("CutScene"); 
     }
 
     // Dipanggil saat tombol Credit ditekan
