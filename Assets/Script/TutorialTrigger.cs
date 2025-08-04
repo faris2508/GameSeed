@@ -5,8 +5,8 @@ using TMPro;
 public class TutorialTrigger : MonoBehaviour
 {
     [Header("UI Elements")]
-    public GameObject tutorialPanel;   // Panel utama (berisi icon + dialog box + text)
-    public TextMeshProUGUI dialogText; // Text dialog
+    public GameObject tutorialPanel;   // Panel utama tutorial
+    public TextMeshProUGUI dialogText; // Teks dialog tutorial
 
     [Header("Dialog Settings")]
     [TextArea] public string[] dialogLines; // Isi dialog tutorial
@@ -19,7 +19,7 @@ public class TutorialTrigger : MonoBehaviour
 
     private void Start()
     {
-        tutorialPanel.SetActive(false); // Pastikan panel off di awal
+        tutorialPanel.SetActive(false);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -30,18 +30,6 @@ public class TutorialTrigger : MonoBehaviour
         }
     }
 
-    void StartTutorial()
-    {
-        tutorialActive = true;
-        currentLineIndex = 0;
-        tutorialPanel.SetActive(true);
-
-        // Pause game
-        Time.timeScale = 0f;
-
-        ShowLine();
-    }
-
     public void StartTutorialExternally()
     {
         if (!tutorialActive)
@@ -50,22 +38,38 @@ public class TutorialTrigger : MonoBehaviour
         }
     }
 
+    void StartTutorial()
+    {
+        tutorialActive = true;
+        PauseManager.TutorialActive = true; // Kasih tahu PauseManager kalau tutorial aktif
+        currentLineIndex = 0;
+        tutorialPanel.SetActive(true);
+
+        // Pause game untuk fokus tutorial
+        Time.timeScale = 0f;
+
+        ShowLine();
+    }
+
     void Update()
     {
         if (!tutorialActive) return;
+
+        // Kalau sedang pause menu → jangan respon tombol space tutorial
+        if (PauseManager.IsPaused) return;
 
         if (Input.GetKeyDown(KeyCode.Space))
         {
             if (isTyping)
             {
-                // Skip typing langsung tampil full text
+                // Skip animasi ketik
                 StopCoroutine(typingCoroutine);
                 dialogText.text = dialogLines[currentLineIndex];
                 isTyping = false;
             }
             else
             {
-                // Lanjut ke dialog berikutnya
+                // Lanjut ke dialog berikut
                 currentLineIndex++;
                 if (currentLineIndex < dialogLines.Length)
                 {
@@ -92,11 +96,10 @@ public class TutorialTrigger : MonoBehaviour
         isTyping = true;
         dialogText.text = "";
 
-        // Supaya typing tetap jalan walau Time.timeScale = 0 → pakai realtimeWait
         foreach (char letter in line.ToCharArray())
         {
             dialogText.text += letter;
-            yield return new WaitForSecondsRealtime(typingSpeed);
+            yield return new WaitForSecondsRealtime(typingSpeed); // Tetap jalan meskipun timescale = 0
         }
 
         isTyping = false;
@@ -104,10 +107,14 @@ public class TutorialTrigger : MonoBehaviour
 
     void EndTutorial()
     {
-        // Resume game
-        Time.timeScale = 1f;
+        tutorialActive = false;
+        PauseManager.TutorialActive = false; // Kasih tahu PauseManager kalau tutorial sudah selesai
+
+        // Kalau tidak sedang pause menu, baru jalankan game
+        if (!PauseManager.IsPaused)
+            Time.timeScale = 1f;
 
         tutorialPanel.SetActive(false);
-        Destroy(gameObject); // Hapus trigger agar tidak muncul lagi
+        Destroy(gameObject);
     }
 }

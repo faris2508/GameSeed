@@ -3,7 +3,12 @@ guid: ccd885fe4c4b91d498a6ae4a447bcad2
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: Texture warna
+    second: {fileID: 2800000, guid: 009a90c66eb436c47b5fafc33b8b2798, type: 3}
   materials:
     materialImportMode: 2
     materialName: 0
