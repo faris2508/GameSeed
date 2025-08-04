@@ -13,13 +13,17 @@ public class Customer : MonoBehaviour
     public CustomerManager spawner;
 
     public TextMeshProUGUI timerText; // 🔥 Tambahkan variabel untuk teks timer
+    public Slider timerSlider;
     
     private float orderTimer = 90f;
+    private float maxOrderTimer;
     public int spawnPointIndex;
 
     void Start()
     {
         // Cari objek pemain secara otomatis
+        maxOrderTimer = orderTimer; // Simpan waktu awal
+        UpdateTimerUI();
         GameObject playerObject = GameObject.FindGameObjectWithTag("Player");
         if (playerObject != null)
         {
@@ -47,6 +51,7 @@ public class Customer : MonoBehaviour
     {
         // Kurangi timer setiap frame
         orderTimer -= Time.deltaTime;
+        UpdateTimerUI();
 
         // 🔥 Perbarui tampilan teks timer
         if (timerText != null)
@@ -98,6 +103,26 @@ public class Customer : MonoBehaviour
         {
             OrderFailed();
             return false;
+        }
+    }
+
+    private void UpdateTimerUI()
+    {
+        // Update Slider
+        if (timerSlider != null)
+        {
+            timerSlider.value = orderTimer / maxOrderTimer; // Normalisasi nilai (0-1)
+        }
+
+        // Update Text (format menit:detik)
+        if (timerText != null)
+        {
+            int minutes = Mathf.FloorToInt(orderTimer / 60);
+            int seconds = Mathf.FloorToInt(orderTimer % 60);
+            timerText.text = string.Format("{0:00}:{1:00}", minutes, seconds);
+
+            // Ubah warna jika waktu hampir habis
+            timerText.color = (orderTimer <= 10f) ? Color.red : Color.white;
         }
     }
 
