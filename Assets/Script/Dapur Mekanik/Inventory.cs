@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class Inventory : MonoBehaviour
 {
@@ -33,6 +34,9 @@ public class Inventory : MonoBehaviour
     public float horizontalStackOffset = 0.3f;
     private int maxPlatesPerStack = 2;
     private Quaternion plateRotation = Quaternion.Euler(-90f, 0, 0);
+
+    public int customersServedCorrectly = 0;
+    public TextMeshProUGUI customersServedText;
 
     void Start()
     {
@@ -119,6 +123,8 @@ public class Inventory : MonoBehaviour
             thrownFoodScript.inventory = this;
             thrownFoodScript.SetSmashSound(smashSound);
 
+            thrownFoodScript.foodName = food; 
+
             if (foodStackObjects.Count > 0)
             {
                 GameObject topPlate = foodStackObjects[foodStackObjects.Count - 1];
@@ -170,6 +176,34 @@ public class Inventory : MonoBehaviour
         }
 
         foodStackObjects.Add(newPlate);
+    }
+
+    public void CustomerServed()
+    {
+        customersServedCorrectly++;
+        UpdateCustomersServedUI();
+
+        // 🔥 Cek kondisi untuk pindah scene
+        if (customersServedCorrectly >= 10 && points > 0)
+        {
+            Debug.Log("Selamat! Tujuan tercapai. Memuat scene Credit.");
+            SceneManager.LoadScene("Credit");
+        }
+    }
+
+    private void UpdateCustomersServedUI()
+    {
+        if (customersServedText != null)
+        {
+            customersServedText.text = $"Pelanggan: {customersServedCorrectly}/10";
+        }
+    }
+
+    public void SubtractPoints(int amount)
+    {
+        points -= amount;
+        Debug.Log($"Poin berkurang: {amount}. Total poin: {points}");
+        UpdatePointsUI();
     }
 
     public void AddPoints(int amount)

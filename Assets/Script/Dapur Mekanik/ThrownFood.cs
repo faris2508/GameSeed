@@ -2,30 +2,34 @@ using UnityEngine;
 
 public class ThrownFood : MonoBehaviour
 {
-    public Inventory inventory; // Referensi ke inventory pemain
-    private AudioClip smashSound; // Variabel private untuk menampung klip audio
-
+    public Inventory inventory;
+    private AudioClip smashSound;
     private bool hasHitCustomer = false;
-     // Metode untuk menerima sound effect
+    public string foodName;
+
     public void SetSmashSound(AudioClip clip)
     {
         smashSound = clip;
     }
+
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.gameObject.CompareTag("Customer"))
         {
-            // Tambahkan poin jika mengenai customer
-            if (inventory != null)
+            Customer customer = collision.gameObject.GetComponent<Customer>();
+            if (customer != null)
             {
-                inventory.AddPoints(10); // Misalnya 10 poin per makanan
+                customer.CheckOrder(foodName); // Skrip Customer yang akan menangani
             }
             hasHitCustomer = true;
-            Destroy(gameObject); // Hapus makanan setelah mengenai customer
+            Destroy(gameObject);
         }
         else if (collision.gameObject.CompareTag("Ground"))
         {
-            // Hapus makanan jika mengenai tanah (tanpa poin)
+            if (inventory != null)
+            {
+                inventory.SubtractPoints(2); // Kurangi poin saat mengenai tanah
+            }
             AudioSource.PlayClipAtPoint(smashSound, transform.position);
             Destroy(gameObject);
         }
@@ -33,17 +37,15 @@ public class ThrownFood : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Sound effect hanya akan dimainkan jika belum mengenai customer
-        // Ini memastikan suara hanya dimainkan saat piring pecah
         if (!hasHitCustomer && smashSound != null)
         {
-            AudioSource.PlayClipAtPoint(smashSound, transform.position);
+            // Sound effect hanya dimainkan jika pecah di tanah,
+            // bukan saat kena pelanggan
         }
     }
+
     private void Start()
     {
-        // Hapus makanan setelah 5 detik jika tidak mengenai apa pun
         Destroy(gameObject, 1f);
-
     }
 }
