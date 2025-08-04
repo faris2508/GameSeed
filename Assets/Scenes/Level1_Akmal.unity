@@ -271,7 +271,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &23417669
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1155,7 +1155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3c50b4e1dc6a244963527be2175e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodName: Telor
+  foodName: telor
   foodSprite: {fileID: 21300000, guid: b473f075c88e07a4393288a826ad415a, type: 3}
   foodPrefab: {fileID: 5589883747880118311, guid: f8611be3c2c6fd045aa4a216d2d758a1, type: 3}
   foodScale: {x: 0, y: 0, z: 0}
@@ -2144,7 +2144,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3c50b4e1dc6a244963527be2175e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodName: Ayam Pop
+  foodName: ayampop
   foodSprite: {fileID: 21300000, guid: 8c659593e5b62484a9f4c2d2b50e71ca, type: 3}
   foodPrefab: {fileID: 7964070777591773624, guid: 2b889e9bb5f082d40952f2c71430cdfb, type: 3}
   foodScale: {x: 0, y: 0, z: 0}
@@ -3508,6 +3508,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c6cfd2b11cb48e4a98dac2e6dd2b689, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 0}
   moveSpeed: 25
   maxSpeed: 35
   turnSpeed: 140
@@ -3522,6 +3523,8 @@ MonoBehaviour:
   model: {fileID: 0}
   audioSource: {fileID: 571822782}
   deathSFX: {fileID: 8300000, guid: 97ab41e9138aac349bbdbed43a74ed1f, type: 3}
+  playerInventory: {fileID: 0}
+  isCarryingItem: 0
 --- !u!54 &503321184
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -4246,7 +4249,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &630939292
 Transform:
   m_ObjectHideFlags: 0
@@ -5873,6 +5876,68 @@ RectTransform:
   m_AnchoredPosition: {x: 672, y: -327}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!1 &818157651
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 818157652}
+  m_Layer: 0
+  m_Name: Spawn5
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &818157652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818157651}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 11.31, y: -6.48, z: 4.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871826392}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!1 &818940604
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 818940605}
+  m_Layer: 0
+  m_Name: Spawn3
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &818940605
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 818940604}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -3.91, y: -6.48, z: 4.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871826392}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &831857278
 GameObject:
   m_ObjectHideFlags: 0
@@ -6092,7 +6157,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3c50b4e1dc6a244963527be2175e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodName: Rendang
+  foodName: rendang
   foodSprite: {fileID: 21300000, guid: 535f87bcb6e17a8458d4df068e21184f, type: 3}
   foodPrefab: {fileID: 2611468416098260604, guid: f31962ca981f30c4e94762e76ca05434, type: 3}
   foodScale: {x: 0, y: 0, z: 0}
@@ -7185,6 +7250,37 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1044813048}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1104679655
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1104679656}
+  m_Layer: 0
+  m_Name: Spawn1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1104679656
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1104679655}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -19.2, y: -6.48, z: 4.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871826392}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1137772451
 GameObject:
   m_ObjectHideFlags: 0
@@ -8977,6 +9073,37 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1591262932}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1372491277
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1372491278}
+  m_Layer: 0
+  m_Name: Spawn2
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1372491278
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1372491277}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: -11.43, y: -6.48, z: 4.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871826392}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1378671249
 GameObject:
   m_ObjectHideFlags: 0
@@ -10969,6 +11096,37 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 26.614967, y: 5.5793595, z: 4.3497295}
   m_Center: {x: -12.807487, y: 2.2896798, z: -1.674865}
+--- !u!1 &1704099249
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1704099250}
+  m_Layer: 0
+  m_Name: Spawn4
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1704099250
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1704099249}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: -0.7071068, z: 0, w: 0.7071068}
+  m_LocalPosition: {x: 3.77, y: -6.48, z: 4.31}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1871826392}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1 &1720271241 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 919132149155446097, guid: ccd885fe4c4b91d498a6ae4a447bcad2, type: 3}
@@ -11702,6 +11860,64 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1044394397}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1871826390
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1871826392}
+  - component: {fileID: 1871826391}
+  m_Layer: 0
+  m_Name: CustSpawn
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1871826391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871826390}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 300019ec44ebebb4487e327c2eec5014, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customerPrefab: {fileID: 6540624248929869113, guid: f5199f495f8484c46aa76144c5667edf, type: 3}
+  spawnPoints:
+  - {fileID: 1104679656}
+  - {fileID: 1372491278}
+  - {fileID: 818940605}
+  - {fileID: 1704099250}
+  - {fileID: 818157652}
+  spawnInterval: 90
+  maxCustomers: 5
+--- !u!4 &1871826392
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1871826390}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -45.101902, y: 9.664668, z: 1.2507937}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1104679656}
+  - {fileID: 1372491278}
+  - {fileID: 818940605}
+  - {fileID: 1704099250}
+  - {fileID: 818157652}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1872462186
 GameObject:
@@ -12959,7 +13175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3c50b4e1dc6a244963527be2175e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodName: Sate Padang
+  foodName: sate
   foodSprite: {fileID: 21300000, guid: dc6039b7767e8bd4f98b8db6e2a5ddf6, type: 3}
   foodPrefab: {fileID: 2376038746666102763, guid: 7623778cd195665479d60e9dff4eaa6f, type: 3}
   foodScale: {x: 0, y: 0, z: 0}
@@ -13224,7 +13440,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fb3c50b4e1dc6a244963527be2175e07, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  foodName: Ikan Bakar
+  foodName: ikan
   foodSprite: {fileID: 21300000, guid: b27cbf9c5e2e48c47b0bf7a2a85bdb53, type: 3}
   foodPrefab: {fileID: 5395271263686999012, guid: 8bf85afb61ed1ab4a9461acd8babd5ce, type: 3}
   foodScale: {x: 0, y: 0, z: 0}
@@ -13541,7 +13757,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &4360901509388314670
 RectTransform:
   m_ObjectHideFlags: 0
@@ -13811,3 +14027,4 @@ SceneRoots:
   - {fileID: 23417670}
   - {fileID: 4360901509388314670}
   - {fileID: 630939292}
+  - {fileID: 1871826392}
